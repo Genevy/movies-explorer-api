@@ -1,4 +1,6 @@
+require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const router = require('./routes/index');
@@ -13,24 +15,22 @@ const {
   createUser,
   login,
 } = require('./controllers/users');
+const centralErrorHandler = require('./middlewares/centralErrorHandler');
+const { DB_URL } = require('./utils/config');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   family: 4,
 });
-
+app.use(helmet());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 app.use(handlerCORS);
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
 app.post('/signup', createUserValidation, createUser);
 app.post('/signin', loginValidation, login);
 app.use(auth);
@@ -38,19 +38,7 @@ app.use(router);
 app.use(errorLogger);
 app.use(errors());
 
-app.use((error, request, response, next) => {
-  const {
-    status = 500,
-    message,
-  } = error;
-  response.status(status)
-    .send({
-      message: status === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
+app.use(centralErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Приложение запущено на порту ${PORT}`);

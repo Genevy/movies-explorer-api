@@ -33,15 +33,12 @@ module.exports.createMovieValidation = celebrate({
       description: Joi.string()
         .required(),
       image: Joi.string()
-        .uri()
         .required()
         .custom(urlValidation),
       trailerLink: Joi.string()
-        .uri()
         .required()
         .custom(urlValidation),
       thumbnail: Joi.string()
-        .uri()
         .required()
         .custom(urlValidation),
       nameRU: Joi.string().required(),

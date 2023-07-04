@@ -1,12 +1,10 @@
-require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userSchema = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
-const { NODE_ENV } = process.env;
-const JWT = process.env.REACT_APP_JWT;
+const { JWT_SECRET } = require('../utils/config');
 
 module.exports.getUser = (request, response, next) => {
   userSchema.findById(request.user._id)
@@ -54,7 +52,9 @@ module.exports.updateUser = (request, response, next) => {
         .send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.code === 11000) {
+        next(new ConflictError('The username with this email has already been registered'));
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(BadRequestError('Incorrect data'));
       } else {
         next(err);
@@ -107,7 +107,7 @@ module.exports.login = (request, response, next) => {
   return userSchema
     .findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT : 'cat', {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: '1w',
       });
       response.send({ token });

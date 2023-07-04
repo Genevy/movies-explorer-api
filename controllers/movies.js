@@ -47,7 +47,7 @@ module.exports.createMovie = (request, response, next) => {
       .send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Invalid data for card creation'));
+        next(new BadRequestError('Invalid data for movie creation'));
       } else {
         next(err);
       }
@@ -60,12 +60,12 @@ module.exports.deleteMovie = (request, response, next) => {
   movieSchema.findById(movieId)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('User cannot be found');
+        throw new NotFoundError('Movie cannot be found');
       }
-      if (request.user._id === movie.owner.toString()) {
-        return movie.remove();
+      if (request.user._id.toString() === movie.owner.toString()) {
+        return movie.deleteOne();
       }
-      return next(new ForbiddenError('Attempting to delete another users movie'));
+      return next(new ForbiddenError('Attempting to delete another movie movie'));
     })
     .then((movie) => response.send(movie))
     .catch(next);
