@@ -8,7 +8,7 @@
 
 IP: 84.201.128.242
 
-Backend domain: api.movies.genevy.nomoreparties.sbs
+Backend domain: https://api.movies.genevy.nomoreparties.sbs
 
 <br>
 
