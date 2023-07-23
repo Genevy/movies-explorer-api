@@ -1,6 +1,6 @@
 const allowedCors = [
-  'https://movies.genevy.nomoreparties.sbs',
-  'http://movies.genevy.nomoreparties.sbs',
+  // * 'https://movies.genevy.nomoreparties.sbs',
+  // * 'http://movies.genevy.nomoreparties.sbs',
   'https://api.movies.genevy.nomoreparties.sbs',
   'http://api.movies.genevy.nomoreparties.sbs',
   'http://localhost:3001',
